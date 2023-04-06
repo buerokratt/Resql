@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,7 +29,7 @@ public abstract class BaseIntegrationTest {
     public static final String USER_LOGIN = "user";
     public static final String USER_EMAIL = "user@example.com";
 
-    @LocalServerPort
+    @Value("${local.server.port}")
     protected int port;
     @Autowired
     protected MockMvc mockMvc;

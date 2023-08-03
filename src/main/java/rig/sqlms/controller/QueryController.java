@@ -2,10 +2,8 @@ package rig.sqlms.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 import rig.sqlms.service.QueryService;
 
 import java.util.List;
@@ -20,10 +18,21 @@ public class QueryController {
     /**
      * @return JSON array containing the results
      */
-    @Operation(description = "Initiates previously configured queries")
-    @PostMapping("/{name}")
-    public List<Map<String, Object>> execute(@PathVariable String name, @RequestBody(required = false) Map<String, Object> parameters) {
-        return queryService.execute(name, parameters);
+    @Operation(description = "Initiates previously configured POST queries")
+    @PostMapping(value = "/{name}")
+    public List<Map<String, Object>> execute(@PathVariable String name,
+                                             @RequestBody(required = false) Map<String, Object> parameters) {
+        return queryService.executePost(name, parameters);
+    }
+
+    /**
+     * @return JSON array containing the results
+     */
+    @Operation(description = "Initiates previously configured GET queries")
+    @GetMapping(value = "/{name}")
+    public List<Map<String, Object>> execute(@PathVariable String name,
+                                             @RequestParam(required = false) MultiValueMap<String, Object> parameters) {
+        return queryService.executeGet(name, parameters.toSingleValueMap());
     }
 
     /**
@@ -33,7 +42,7 @@ public class QueryController {
     @PostMapping("/{name}/batch")
     public List<List<Map<String, Object>>> executeBatch(@PathVariable String name, @RequestBody BatchRequest batchRequest) {
         return batchRequest.queries.stream()
-                .map(parameters -> queryService.execute(name, parameters))
+                .map(parameters -> queryService.executePost(name, parameters))
                 .toList();
     }
 

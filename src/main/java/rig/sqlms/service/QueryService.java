@@ -21,8 +21,14 @@ public class QueryService {
     private final SavedQueryService savedQueryService;
     private final ResqlJdbcTemplate resqlJdbcTemplate;
 
-    public List<Map<String, Object>> execute(String queryName, Map<String, Object> parameters) {
-        SavedQuery savedQuery = savedQueryService.get(queryName);
+    public List<Map<String, Object>> executePost(String queryName, Map<String, Object> parameters) {
+        SavedQuery savedQuery = savedQueryService.get("POST", queryName);
+        setDatabaseContext(savedQuery.dataSourceName());
+        return resqlJdbcTemplate.queryOrExecute(savedQuery.query(), parameters);
+    }
+
+    public List<Map<String, Object>> executeGet(String queryName, Map<String, Object> parameters) {
+        SavedQuery savedQuery = savedQueryService.get("GET", queryName);
         setDatabaseContext(savedQuery.dataSourceName());
         return resqlJdbcTemplate.queryOrExecute(savedQuery.query(), parameters);
     }

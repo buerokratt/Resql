@@ -1,4 +1,4 @@
-# About
+# About 
 
 Resql, derived from "REST SQL", is one of Bürokratt's generic base components. Such components are called Bükstack components.
 

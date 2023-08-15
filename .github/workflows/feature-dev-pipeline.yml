@@ -1,0 +1,45 @@
+name: Deploy Docker Compose
+
+on:
+  push:
+    branches:
+      - feature-dev-pipeline
+
+jobs:
+  deploy-dev-test:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/feature-dev-pipeline'  # Only run for the 'feature' branch
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.RESQL_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.MAIN_SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: Create directory on remote server
+        run: |
+          ssh -i $HOME/.ssh/id_rsa ubuntu@${{ secrets.MAIN_SERVER_IP }} 'mkdir -p /opt/etapp2/dev/resql'
+      - name: Check if directory exists on remote server
+        id: check-directory
+        run: |
+            ssh -i $HOME/.ssh/id_rsa ubuntu@${{ secrets.MAIN_SERVER_IP }} 'if [ -d "/opt/etapp2/dev/resql" ]; then echo "Directory exists"; else echo "Directory does not exist"; fi'
+
+      - name: Create directory on remote server
+        run: |
+            if [[ "${{ steps.check-directory.outputs.check-directory }}" == *"Directory does not exist"* ]]; then
+            
+            ssh -i $HOME/.ssh/id_rsa ubuntu@${{ secrets.MAIN_SERVER_IP }} 'mkdir -p /opt/etapp2/dev/resql'
+            fi
+
+
+      - name: Push repository to MAIN server
+        run: rsync -az --exclude='.git/' -e "ssh -i $HOME/.ssh/id_rsa" $GITHUB_WORKSPACE/ ubuntu@${{ secrets.MAIN_SERVER_IP }}:/opt/etapp2/dev/resql
+        
+
+      - name: Run Docker Compose on MAIN server
+        run: |
+          ssh -i $HOME/.ssh/id_rsa ubuntu@${{ secrets.MAIN_SERVER_IP }} 'cd /opt/etapp2/dev/resql && docker-compose down && docker-compose up -d --build'

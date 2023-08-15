@@ -3,6 +3,8 @@ name: Build and publish RESQL
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+     - '**.md'
 
 jobs:
   PackageDeploy:

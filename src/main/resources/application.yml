@@ -18,7 +18,7 @@ h2:
     enabled: true
 
 sqlms:
-  saved-queries-dir: "./templates/"
+  saved-queries-dir: "/DSL/"
   datasources:
     - name: test_db_1
       jdbcUrl: jdbc:h2:mem:test_db_1;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1

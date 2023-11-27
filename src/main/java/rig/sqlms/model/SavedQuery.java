@@ -22,7 +22,10 @@ public record SavedQuery(String query, String dataSourceName) {
     }
 
     private static String getDatabaseName(String absolutePath) {
-        return absolutePath.substring(nthLastIndexOf(2, "/", absolutePath) + 1, absolutePath.lastIndexOf("/"));
+        return "";
+//        String[] pathParts = absolutePath.split("/");
+//        return pathParts[pathParts.length - 2] ;
+        //return absolutePath.substring(nthLastIndexOf(2, "/", absolutePath) + 1, absolutePath.lastIndexOf("/"));
     }
 
     private static int nthLastIndexOf(int nth, String character, String string) {

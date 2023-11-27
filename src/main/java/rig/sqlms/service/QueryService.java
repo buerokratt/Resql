@@ -21,9 +21,15 @@ public class QueryService {
     private final SavedQueryService savedQueryService;
     private final ResqlJdbcTemplate resqlJdbcTemplate;
 
-    private List<Map<String, Object>> execute(String method, String queryName, Map<String, Object> parameters) {
-        String project = queryName.substring(0, queryName.indexOf("/"));
-        SavedQuery savedQuery = savedQueryService.get(project,method, queryName);
+    public List<Map<String, Object>> execute(String method, String queryName, Map<String, Object> parameters) {
+        String[] projectQuery = queryName.split("/", 1);
+        String project = projectQuery[0];
+        String query = projectQuery[1];
+        return execute(project, method, query, parameters);
+    }
+    public  List<Map<String, Object>> execute(String project, String method, String queryName, Map<String, Object> parameters) {
+        log.info("Incoming "+method+" for "+project + "::" + queryName);
+        SavedQuery savedQuery = savedQueryService.get(project, method, queryName);
         setDatabaseContext(savedQuery.dataSourceName());
         return resqlJdbcTemplate.queryOrExecute(savedQuery.query(), parameters);
     }

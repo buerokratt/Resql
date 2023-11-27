@@ -21,16 +21,19 @@ public class QueryService {
     private final SavedQueryService savedQueryService;
     private final ResqlJdbcTemplate resqlJdbcTemplate;
 
-    public List<Map<String, Object>> executePost(String queryName, Map<String, Object> parameters) {
-        SavedQuery savedQuery = savedQueryService.get("POST", queryName);
+    private List<Map<String, Object>> execute(String method, String queryName, Map<String, Object> parameters) {
+        String project = queryName.substring(0, queryName.indexOf("/"));
+        SavedQuery savedQuery = savedQueryService.get(project,method, queryName);
         setDatabaseContext(savedQuery.dataSourceName());
         return resqlJdbcTemplate.queryOrExecute(savedQuery.query(), parameters);
     }
 
+    public List<Map<String, Object>> executePost(String queryName, Map<String, Object> parameters) {
+        return execute("POST", queryName, parameters);
+    }
+
     public List<Map<String, Object>> executeGet(String queryName, Map<String, Object> parameters) {
-        SavedQuery savedQuery = savedQueryService.get("GET", queryName);
-        setDatabaseContext(savedQuery.dataSourceName());
-        return resqlJdbcTemplate.queryOrExecute(savedQuery.query(), parameters);
+        return execute("GET", queryName, parameters);
     }
 
     private void setDatabaseContext(String dataSourceName) {

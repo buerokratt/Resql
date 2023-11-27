@@ -9,6 +9,7 @@ import rig.sqlms.exception.ResqlRuntimeException;
 import rig.sqlms.model.SavedQuery;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,28 +20,36 @@ public class SavedQueryService {
 
     private final String[] METHODS = {"GET", "POST"};
 
-    private final Map<String, Map<String, SavedQuery>> savedQueries = new HashMap<>();
+    private final Map<String, Map<String, Map<String, SavedQuery>>> savedQueries = new HashMap<>();
 
     public SavedQueryService(@Value("${sqlms.saved-queries-dir}") String savedQueriesDir) {
         log.info("Initializing SavedQueryService");
-        for (String method : METHODS) {
-            String queriesPath = savedQueriesDir + method + "/";
-            log.debug("Loading queries from "+ queriesPath);
-            loadQueries(method, getConfigDir(savedQueriesDir + method + "/").listFiles());
+        File dslRoot = getConfigDir(savedQueriesDir);
+        for (File projectDir : dslRoot.listFiles((f) -> f.isDirectory())) {
+            for (String method : METHODS) {
+                String queriesPath = projectDir.getPath() + "/" + method + "/";
+                log.info("Loading queries from " + queriesPath);
+                loadQueries(projectDir.getName(), method,
+                        getConfigDir(savedQueriesDir + "/"
+                                + projectDir.getName() + "/"
+                                + method + "/").listFiles());
+            }
         }
     }
 
-    private void loadQueries(String method, File[] filesList) {
-        if (!savedQueries.containsKey(method))
-            savedQueries.put(method, new HashMap<>());
+    private void loadQueries(String project, String method, File[] filesList) {
+        if (!savedQueries.containsKey(project))
+            savedQueries.put(project, new HashMap<>());
+        if (!savedQueries.get(project).containsKey(method))
+            savedQueries.get(project).put(method, new HashMap<>());
         try {
             if (filesList != null) {
                 for (File file : filesList) {
                     if (file.isDirectory()) {
-                        loadQueries(method, file.listFiles());
+                        loadQueries(project, method, file.listFiles());
                     } else {
                         try {
-                            savedQueries.get(method).put(getQueryName(file), SavedQuery.of(file.getAbsolutePath()));
+                            savedQueries.get(project).get(method).put(getQueryName(file), SavedQuery.of(file.getAbsolutePath()));
                         } catch (Throwable t) {
                             log.error("Failed parsing saved query file {}", file.getName(), t);
                         }
@@ -59,8 +68,8 @@ public class SavedQueryService {
     }
 
     @NonNull
-    public SavedQuery get(String method, String name) {
-        SavedQuery query = savedQueries.get(method).get(name.trim().toLowerCase());
+    public SavedQuery get(String project, String method, String name) {
+        SavedQuery query = savedQueries.get(project).get(method).get(name.trim().toLowerCase());
 
         if (query == null) {
             throw new ResqlRuntimeException("Saved query '%s' does not exist".formatted(name));
@@ -81,11 +90,9 @@ public class SavedQueryService {
         return configDir;
     }
 
-    public static String mapDeepToString(Map<String, Map<String, SavedQuery>> map) {
-        return map.entrySet().stream()
-                .map(method -> "{" + method.getKey() +
-                        method.getValue().entrySet().stream().map(path -> path.getKey() + "=>" + path.getValue())
-                                .collect(Collectors.joining(",")) + "}")
+    public static <T> String mapDeepToString(Map<String, T> map) {
+        return map == null ? "" : map.entrySet().stream()
+                .map(e ->"{ " + e.getKey() + " => " + (e.getValue() instanceof Map ? mapDeepToString((Map)e.getValue()) : e.getValue().toString()) + " }")
                 .collect(Collectors.joining(","));
     }
 

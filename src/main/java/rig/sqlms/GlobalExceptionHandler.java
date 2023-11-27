@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
             message = "Internal error";
         }
         ErrorResponseBody body = new ErrorResponseBody(simpleName, message);
-        log.error("Writing error: %s".formatted(body), ex);
+        log.error("Writing error: %s (%s)".formatted(body, request.getDescription(false)), ex);
         return new ResponseEntity<>(body, BAD_REQUEST);
     }
 

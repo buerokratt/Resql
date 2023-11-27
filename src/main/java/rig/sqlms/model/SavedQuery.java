@@ -21,8 +21,9 @@ public record SavedQuery(String query, String dataSourceName) {
         return new String(encoded, StandardCharsets.UTF_8);
     }
 
+    //TODO: make this somehow configurable. CURRENTLY HARDCODED, due to new hierarchical system.
     private static String getDatabaseName(String absolutePath) {
-        return "";
+        return "byk";
 //        String[] pathParts = absolutePath.split("/");
 //        return pathParts[pathParts.length - 2] ;
         //return absolutePath.substring(nthLastIndexOf(2, "/", absolutePath) + 1, absolutePath.lastIndexOf("/"));

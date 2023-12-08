@@ -4,8 +4,10 @@ services:
     container_name: resql
     build:
       context: .
+    environment:
+      - sqlms.saved-queries-dir=./templates/
     ports:
-      - 8082:8082
+      - 8082:8080
     networks:
       - resql
 

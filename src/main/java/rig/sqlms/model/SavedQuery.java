@@ -12,8 +12,8 @@ public record SavedQuery(String query, String dataSourceName) {
         Objects.requireNonNull(dataSourceName);
     }
 
-    public static SavedQuery of(String absolutePath) throws IOException {
-        return new SavedQuery(getContents(absolutePath), getDatabaseName(absolutePath));
+    public static SavedQuery of(String absolutePath, String project) throws IOException {
+        return new SavedQuery(getContents(absolutePath), getDatabaseName(project));
     }
 
     private static String getContents(String absolutePath) throws IOException {
@@ -21,8 +21,8 @@ public record SavedQuery(String query, String dataSourceName) {
         return new String(encoded, StandardCharsets.UTF_8);
     }
 
-    private static String getDatabaseName(String absolutePath) {
-        return absolutePath.substring(nthLastIndexOf(2, "/", absolutePath) + 1, absolutePath.lastIndexOf("/"));
+    private static String getDatabaseName(String project) {
+        return "byk"; // TODO: change this to project if multiple datasources are needed;
     }
 
     private static int nthLastIndexOf(int nth, String character, String string) {

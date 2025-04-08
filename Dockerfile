@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /workspace/app
 
@@ -9,8 +9,11 @@ COPY pom.xml .
 COPY src src
 COPY libs libs
 COPY templates templates
+COPY .env .env
 
 ENV sqlms.saved-queries-dir=./templates
+ENV sqlms.saved-queries-dir=/DSL
+RUN mkdir -p DSL/GET DSL/POST
 
 RUN ./mvnw install:install-file -Dfile=libs/id-log-${ID_LOG_VERSION}.jar -DgroupId=ee.ria.commons -DartifactId=id-log -Dversion=${ID_LOG_VERSION} -Dpackaging=jar -DgeneratePom=true
 RUN ./mvnw install -DskipTests=true

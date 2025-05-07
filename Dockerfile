@@ -11,6 +11,9 @@ COPY libs libs
 COPY templates templates
 COPY .env .env
 
+COPY .env /app/.env
+RUN echo BUILDTIME=`date +%s%N | cut -b1-13` >> /app/.env
+
 ENV sqlms.saved-queries-dir=./templates
 ENV sqlms.saved-queries-dir=/DSL
 RUN mkdir -p DSL/GET DSL/POST

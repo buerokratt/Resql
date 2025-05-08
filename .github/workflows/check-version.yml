@@ -30,6 +30,7 @@ jobs:
 
       - name: Generate Changelog
         run: npm run changelog
+        if: ${{ env.BRANCH == 'main' }}
 
       - name: Push changes to repo
         run: |
@@ -41,7 +42,7 @@ jobs:
 
       - name: Load environment variables
         run: |
-          awk -v branch="${{ env.BRANCH }}" ' /^[0-9a-zA-Z]+$/ { current_branch = $0; } current_branch == branch && /^[A-Z_]+=/{ print $0; }' release.env >> $GITHUB_ENV
+          awk -v branch="${{ env.BRANCH }}" ' /^[0-9a-zA-Z]+$/ { current_branch = $0; } current_branch == branch && /^[A-Z_]+=/{ print $0; }' release.env  | tee -a $GITHUB_ENV >> .env
 
       - name: Set repo
         run: |

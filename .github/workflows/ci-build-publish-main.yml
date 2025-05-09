@@ -2,7 +2,7 @@ name: Build and publish RESQL
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ dev-project-based-dsls ]
     paths:
       - '.env'
 

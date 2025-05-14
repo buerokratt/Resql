@@ -36,7 +36,7 @@ public class HeartBeatService {
 
     private String getVersion() {
         if (version == null)
-            version =   packageVersionConfiguration.getRelease() + "-" +
+            version =  "v" +
                     packageVersionConfiguration.getMajor() + "." +
                     packageVersionConfiguration.getMinor() + "." +
                     packageVersionConfiguration.getPatch();

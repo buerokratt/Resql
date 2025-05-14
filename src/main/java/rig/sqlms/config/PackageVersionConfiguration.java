@@ -10,9 +10,6 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("file:/app/.env")
 public class PackageVersionConfiguration {
 
-    @Value("${RELEASE}")
-    private String release;
-
     @Value("${BUILDTIME}")
     private Long buildTime;
 

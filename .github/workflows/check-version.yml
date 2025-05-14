@@ -43,7 +43,6 @@ jobs:
       - name: Load environment variables
         run: |
           awk -v branch="${{ env.BRANCH }}" ' /^[0-9a-zA-Z]+$/ { current_branch = $0; } current_branch == branch && /^[A-Z_]+=/{ print $0; }' release.env  | tee -a $GITHUB_ENV >> .env
-          echo "RELEASE=${{ env.BRANCH }}" >> .env
 
       - name: Set repo
         run: |

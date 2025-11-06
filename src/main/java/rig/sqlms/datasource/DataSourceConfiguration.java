@@ -25,29 +25,12 @@ public class DataSourceConfiguration {
         RoutingDataSource dataSource = new RoutingDataSource();
 
         dataSource.setTargetDataSources(dataSourceConfig.stream()
-                .map(config -> {
-                    var built = DataSourceBuilder.create()
-                            .driverClassName(config.getDriverClassName())
-                            .url(config.getJdbcUrl())
-                            .username(config.getUsername())
-                            .password(config.getPassword())
-                            .build();
-
-                    try {
-                        if (built instanceof com.zaxxer.hikari.HikariDataSource hikari) {
-                            String tz = config.getTimeZone();
-                            if (tz == null || tz.isBlank()) {
-                                tz = "Europe/Tallinn";
-                            }
-                            hikari.setConnectionInitSql("SET TIME ZONE '" + tz + "'");
-                            log.info("Configured time zone '{}' for datasource '{}'", tz, config.getName());
-                        }
-                    } catch (Exception e) {
-                        log.warn("Failed to configure time zone for datasource '{}': {}", config.getName(), e.getMessage());
-                    }
-
-                    return Pair.of(config.getName(), built);
-                })
+                .map(config -> Pair.of(config.getName(), DataSourceBuilder.create()
+                        .driverClassName(config.getDriverClassName())
+                        .url(config.getJdbcUrl())
+                        .username(config.getUsername())
+                        .password(config.getPassword())
+                        .build()))
                 .collect(toMap(Pair::getKey, Pair::getValue)));
 
         return dataSource;

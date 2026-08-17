@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+  resql-test:
+    container_name: resql-test
+    build:
+      context: .
+      dockerfile: Dockerfile.test

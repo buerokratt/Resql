@@ -25,5 +25,14 @@ FROM eclipse-temurin:21-jre-alpine AS runtime
 ENV sqlms.saved-queries-dir=/DSL
 WORKDIR /workspace/app
 COPY --from=build /workspace/app/target/sql-ms.war /workspace/app/target/sql-ms.war
+COPY --from=build /app/.env /app/.env
 USER 1000:1000
 ENTRYPOINT ["java", "-jar", "/workspace/app/target/sql-ms.war"]
+
+# Exercise the final runtime as its non-root user with an in-memory datasource.
+FROM runtime AS test
+USER 0:0
+RUN mkdir -p /DSL/backoffice/GET /DSL/backoffice/POST && printf 'SELECT 1 AS smoke_value;\n' > /DSL/backoffice/GET/smoke.sql && chmod -R a+rX /DSL
+COPY ci/central/startup-smoke.sh /tmp/startup-smoke.sh
+USER 1000:1000
+RUN --network=none sh /tmp/startup-smoke.sh

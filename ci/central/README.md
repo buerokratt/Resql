@@ -14,3 +14,8 @@ The cluster pull identity also needs read access to every resulting package.
 
 NoOps locks these exact source commits and assembles the operator package. Build
 outputs and credentials are ignored; keep local operator bindings outside Git.
+
+Resql's test target starts the actual final runtime as UID1000 with network disabled,
+using its bundled in-memory H2 datasource and a test-only SQL fixture. It requires
+runtime `/app/.env` version metadata and executes a real SQL query before publishing.
+Test fixtures and the smoke script are excluded from the final runtime stage.

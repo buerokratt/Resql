@@ -1,0 +1,6 @@
+{
+  "resql": {
+    "dockerfile": "ci/central/resql.Dockerfile",
+    "context": "."
+  }
+}

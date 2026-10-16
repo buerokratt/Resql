@@ -22,7 +22,14 @@ public record SavedQuery(String query, String dataSourceName) {
     }
 
     private static String getDatabaseName(String project) {
-        return "byk"; // TODO: change this to project if multiple datasources are needed;
+        if (!"true".equals(System.getenv("SQLMS_PROJECT_DATASOURCES"))) return "byk";
+        return switch (project) {
+            case "backoffice", "users" -> "backoffice";
+            case "services" -> "services";
+            case "ckb" -> "ckb";
+            case "rag-search" -> "ragsearch";
+            default -> throw new IllegalArgumentException("Unknown configured project datasource");
+        };
     }
 
     private static int nthLastIndexOf(int nth, String character, String string) {

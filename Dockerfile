@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM eclipse-temurin:21.0.13.1_2-jdk-alpine AS build
 
 WORKDIR /workspace/app
 

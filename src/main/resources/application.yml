@@ -25,7 +25,6 @@ sqlms:
       username: h2
       password: h2
       driverClassName: org.h2.Driver
-      timeZone: Europe/Tallinn
 logging:
   level:
     root: info

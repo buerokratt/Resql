@@ -15,5 +15,4 @@ public class DataSourceConfigProperties implements Serializable {
     @Hidden
     private String password;
     private String driverClassName;
-    private String timeZone;
 }
